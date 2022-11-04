@@ -3,7 +3,8 @@
   "compilerOptions": {
     "outDir": "dist",
     "target": "ES2020",
-    "module": "NodeNext",
+    "module": "ES2020",
+    "moduleResolution": "node",
     "strict": true,
     "declaration": true,
     "sourceMap": true,
