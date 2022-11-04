@@ -19,7 +19,8 @@
   },
   "scripts": {
     "dev": "unbuild --stub",
-    "build": "unbuild"
+    "build": "unbuild",
+    "tsc": "tsc"
   },
   "dependencies": {
     "picocolors": "^1.0.0",
