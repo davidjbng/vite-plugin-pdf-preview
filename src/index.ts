@@ -1,5 +1,4 @@
 import { PluginOption, ResolvedConfig } from "vite";
-import picomatch from "picomatch";
 import path from "path";
 import colors from "picocolors";
 import { generatePdf, PdfOptions } from "./generatePdf.js";
@@ -7,8 +6,34 @@ import invariant from "tiny-invariant";
 import chokidar from "chokidar";
 
 interface PdfPreviewOptions {
+  /**
+   * Relative paths to pdf preview files.
+   *
+   * @example
+   * pages: ["/print"]
+   *
+   * @example
+   * pages: ["page.html"]
+   */
   pages: string[];
+  /**
+   * Glob pattern forwarded to file watcher
+   *
+   * @see https://github.com/paulmillr/chokidar#api
+   */
   watch?: string | string[];
+  /**
+   * Forwarded to puppeteer pdf function.
+   * Property `path` is omitted and can be configured via `build.outDir`
+   *
+   * @see https://pptr.dev/api/puppeteer.pdfoptions
+   *
+   * @default
+   * {
+   *  format = "A4",
+   *  margin = { top: "16px", bottom: "16px" },
+   * }
+   */
   pdfOptions?: PdfOptions;
 }
 
@@ -40,9 +65,7 @@ export default function pdfPreview({
     configureServer({ config: { logger } }) {
       // cannot use vite's built in watcher because it causes issues with hmr updates not being sent
       const watcher = chokidar.watch(watch);
-      logger.info(`Watch: ${Array.isArray(watch) ? watch.join(", ") : watch}`);
       watcher.add(watch);
-      const shouldUpdate = picomatch(watch);
 
       async function updatePdfPreview(file: string) {
         await generatePdf(pageUrl(file), {
@@ -51,19 +74,15 @@ export default function pdfPreview({
         });
       }
 
-      watcher.on("change", (path) => {
-        logger.info(`change ${path}`);
-        if (shouldUpdate(path)) {
-          for (const file of pages) {
-            updatePdfPreview(file);
-          }
-          logger.info(colors.green("Pdf preview reload"));
-        } else {
-          logger.info(colors.dim("No update"));
+      watcher.on("change", () => {
+        for (const file of pages) {
+          updatePdfPreview(file);
         }
+        logger.info(colors.green("Pdf preview reload"));
       });
 
       // load initial pdf preview
+      // using interval to wait for vite server startup
       const interval = setInterval(() => {
         if (config?.server.port) {
           clearInterval(interval);

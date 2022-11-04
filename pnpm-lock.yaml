@@ -6,7 +6,6 @@ specifiers:
   '@types/puppeteer': ^5.4.7
   chokidar: ^3.5.3
   picocolors: ^1.0.0
-  picomatch: ^2.3.1
   prettier: ^2.7.1
   puppeteer: ^19.2.2
   tiny-invariant: ^1.3.1
@@ -16,7 +15,6 @@ specifiers:
 
 dependencies:
   picocolors: 1.0.0
-  picomatch: 2.3.1
   puppeteer: 19.2.2
   tiny-invariant: 1.3.1
 
@@ -1550,6 +1548,7 @@ packages:
   /picomatch/2.3.1:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
     engines: {node: '>=8.6'}
+    dev: true
 
   /pkg-types/0.3.6:
     resolution: {integrity: sha512-uQZutkkh6axl1GxDm5/+8ivVdwuJ5pyDGqJeSiIWIUWIqYiK3p9QKozN/Rv6eVvFoeSWkN1uoYeSDBwwBJBtbg==}
