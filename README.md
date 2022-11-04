@@ -1,6 +1,6 @@
 # vite-plugin-pdf-preview
 
-Preview any web page as a PDF
+Preview web pages as PDF using any framework or just plain HTML – powered by Vite and Puppeteer
 
 ## Getting Started
 
