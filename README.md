@@ -1,4 +1,2 @@
 # vite-plugin-pdf-preview
-Preview any html output as a PDF powered by Vite
-
-Supports modern CSS and Javascript features.
+Preview your webpage as a PDF using modern CSS/JS features – powered by Vite and Puppeteer
