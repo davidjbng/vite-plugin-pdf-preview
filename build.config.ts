@@ -2,7 +2,7 @@ import { defineBuildConfig } from "unbuild";
 
 export default defineBuildConfig({
   entries: ["src/index"],
-  externals: ["vite"],
+  externals: ["vite", "puppeteer"],
   clean: true,
   declaration: true,
   rollup: {
