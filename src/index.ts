@@ -4,16 +4,17 @@ import path from "path";
 import colors from "picocolors";
 import { generatePdf, PdfOptions } from "./generatePdf.js";
 import invariant from "tiny-invariant";
+import chokidar from "chokidar";
 
 interface PdfPreviewOptions {
-  sourceFiles: string[];
-  watch: string[];
-  pdfOptions: PdfOptions;
+  pages: string[];
+  watch?: string | string[];
+  pdfOptions?: PdfOptions;
 }
 
 export default function pdfPreview({
-  watch,
-  sourceFiles,
+  watch = "./src/**",
+  pages,
   pdfOptions,
 }: PdfPreviewOptions): PluginOption {
   let config: ResolvedConfig | undefined;
@@ -23,17 +24,12 @@ export default function pdfPreview({
     return `http://${config.server.host ?? "localhost"}:${config.server.port}`;
   };
 
-  const sourceFileName = (sourceFile: string) =>
-    path.parse(path.basename(sourceFile)).name;
+  const pageName = (page: string) => path.parse(path.basename(page)).name;
 
-  const resolvePdfOutputPath = (sourceFile: string) =>
-    path.join(
-      config?.build.outDir ?? "dist",
-      `${sourceFileName(sourceFile)}-preview.pdf`
-    );
+  const resolveOutFile = (page: string) =>
+    path.join(config?.build.outDir ?? "dist", `${pageName(page)}-preview.pdf`);
 
-  const previewFileUrl = (sourceFile: string) =>
-    `${baseUrl()}/${path.basename(sourceFile)}`;
+  const pageUrl = (page: string) => `${baseUrl()}/${page}`;
 
   return {
     name: "vite-plugin-pdf-preview",
@@ -41,23 +37,29 @@ export default function pdfPreview({
     configResolved(resolvedConfig) {
       config = resolvedConfig;
     },
-    configureServer({ watcher, config: { logger } }) {
+    configureServer({ config: { logger } }) {
+      // cannot use vite's built in watcher because it causes issues with hmr updates not being sent
+      const watcher = chokidar.watch(watch);
+      logger.info(`Watch: ${Array.isArray(watch) ? watch.join(", ") : watch}`);
       watcher.add(watch);
-      const shouldUpdatePdf = picomatch(watch);
+      const shouldUpdate = picomatch(watch);
 
       async function updatePdfPreview(file: string) {
-        await generatePdf(previewFileUrl(file), {
-          outFile: resolvePdfOutputPath(file),
+        await generatePdf(pageUrl(file), {
+          outFile: resolveOutFile(file),
           pdfOptions,
         });
       }
 
       watcher.on("change", (path) => {
-        if (shouldUpdatePdf(path)) {
-          for (const file of sourceFiles) {
+        logger.info(`change ${path}`);
+        if (shouldUpdate(path)) {
+          for (const file of pages) {
             updatePdfPreview(file);
           }
           logger.info(colors.green("Pdf preview reload"));
+        } else {
+          logger.info(colors.dim("No update"));
         }
       });
 
@@ -69,9 +71,9 @@ export default function pdfPreview({
 
           logger.info("");
           logger.info(colors.bold(colors.green("Pdf Preview")));
-          for (const file of sourceFiles) {
-            const outFile = resolvePdfOutputPath(file);
-            generatePdf(previewFileUrl(file), { outFile, pdfOptions });
+          for (const file of pages) {
+            const outFile = resolveOutFile(file);
+            generatePdf(pageUrl(file), { outFile, pdfOptions });
             logger.info(
               colors.dim("File: ") +
                 colors.blue(new URL(outFile, import.meta.url).href)
