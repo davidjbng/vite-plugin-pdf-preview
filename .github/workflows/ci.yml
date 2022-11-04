@@ -37,7 +37,7 @@ jobs:
       - name: 📦 Build
         run: pnpm build
 
-      - name: Publish package on npm
+      - name: 🚀 Semantic Release
         run: pnpm semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
