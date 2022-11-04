@@ -78,7 +78,9 @@ export default function pdfPreview({
         for (const file of pages) {
           updatePdfPreview(file);
         }
-        logger.info(colors.green("Pdf preview reload"));
+        logger.info(colors.green("pdf update"), {
+          timestamp: true,
+        });
       });
 
       // load initial pdf preview
@@ -89,20 +91,17 @@ export default function pdfPreview({
           clearTimeout(timeout);
 
           logger.info("");
-          logger.info(colors.bold(colors.green("Pdf Preview")));
+          logger.info(colors.bold(colors.green("pdf files")));
           for (const file of pages) {
             const outFile = resolveOutFile(file);
             generatePdf(pageUrl(file), { outFile, pdfOptions });
-            logger.info(
-              colors.dim("File: ") +
-                colors.blue(new URL(outFile, import.meta.url).href)
-            );
+            logger.info(colors.dim(outFile));
           }
         }
       }, 50);
       const timeout = setTimeout(() => {
         clearInterval(interval);
-        logger.error(colors.yellow("Pdf preview failed resolve server url"));
+        logger.error(colors.yellow("pdf preview failed resolve server url"));
       }, 5000);
     },
   };
