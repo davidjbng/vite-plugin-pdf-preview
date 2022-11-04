@@ -41,7 +41,7 @@ export default function pdfPreview({
     configResolved(resolvedConfig) {
       config = resolvedConfig;
     },
-    configureServer({ watcher, ws, config: { logger } }) {
+    configureServer({ watcher, config: { logger } }) {
       watcher.add(watch);
       const shouldUpdatePdf = picomatch(watch);
 
@@ -49,10 +49,6 @@ export default function pdfPreview({
         await generatePdf(previewFileUrl(file), {
           outFile: resolvePdfOutputPath(file),
           pdfOptions,
-        });
-        ws.send({
-          type: "full-reload",
-          path: "*",
         });
       }
 
