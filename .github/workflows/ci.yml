@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build_lint:
+  build:
     name: Build
     runs-on: ubuntu-latest
     steps:
@@ -36,3 +36,10 @@ jobs:
 
       - name: 📦 Build
         run: pnpm build
+
+      - name: Publish package on npm
+        if: startsWith(github.ref, 'refs/tags/')
+        run: npx semantic-release@19 -b main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
