@@ -60,5 +60,21 @@
   "bugs": {
     "url": "https://github.com/davidjbng/vite-plugin-pdf-preview/issues"
   },
-  "homepage": "https://github.com/davidjbng/vite-plugin-pdf-preview#readme"
+  "homepage": "https://github.com/davidjbng/vite-plugin-pdf-preview#readme",
+  "release": {
+    "branches": [
+      "+([0-9])?(.{+([0-9]),x}).x",
+      "main",
+      "next",
+      "next-major",
+      {
+        "name": "beta",
+        "prerelease": true
+      },
+      {
+        "name": "alpha",
+        "prerelease": true
+      }
+    ]
+  }
 }
